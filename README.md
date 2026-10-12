@@ -1,105 +1,110 @@
-# DunLegacy
+# DunLegacy - 던전 생성부터 보스전까지 게임 루프를 처음 완성한 2D 로그라이트
 
-> 본 저장소는 포트폴리오 공개용으로 소스 코드와 기술 문서 중심으로 정리한 버전입니다. 원본 프로젝트의 외부 에셋, 사운드, 스프라이트, 씬 파일은 저작권과 용량 문제로 제외했습니다.
+![Unity](https://img.shields.io/badge/Unity-222222?style=flat-square&logo=unity&logoColor=white) ![C#](https://img.shields.io/badge/C%23-68217A?style=flat-square&logo=csharp&logoColor=white) ![Solo](https://img.shields.io/badge/1인-개발-555555?style=flat-square) [![YouTube](https://img.shields.io/badge/YouTube-플레이_영상-FF0000?style=flat-square&logo=youtube&logoColor=white)](https://youtu.be/-EYzNawFw4I)
 
-Unity 기반 2D 횡스크롤 로그라이크 액션 게임 포트폴리오입니다. 플레이어가 마을에서 던전에 진입하고, 랜덤하게 구성된 방을 탐험하며 몬스터와 보스를 상대하는 흐름으로 제작했습니다.
+> 본 저장소는 포트폴리오 공개용 **코드 열람 저장소**입니다. 원본 프로젝트의 외부 에셋, 사운드, 스프라이트, 씬 파일은 저작권과 용량 문제로 제외했으므로 Unity에서 그대로 실행되지 않습니다. 실제 플레이는 아래 영상으로 확인해 주세요.
 
-> Unity 2D 액션, 랜덤 던전 생성, 씬 전환, 전투, 보스 패턴, UI, 사운드 등 게임 클라이언트의 기본 시스템을 폭넓게 구현한 개인 프로젝트입니다.
+[![DunLegacy 플레이 영상](https://img.youtube.com/vi/-EYzNawFw4I/maxresdefault.jpg)](https://youtu.be/-EYzNawFw4I)
+
+▶︎ [플레이 영상](https://youtu.be/-EYzNawFw4I) · 📄 [기술문서 PDF](Docs/Unity_기술문서_던레거시_양지섭.pdf) · 👤 [GitHub 프로필](https://github.com/Femur-0607)
 
 ## 프로젝트 정보
 
 | 항목 | 내용 |
 | --- | --- |
-| 장르 | 2D 횡스크롤 액션 로그라이크 |
-| 개발 기간 | 약 2개월 |
-| 개발 형태 | 개인 프로젝트 |
-| 개발 도구 | Unity 2022.3.21f1 |
-| 주요 기술 | C#, Unity 2D, UGUI, Cinemachine, ScriptableObject, Object Pooling |
+| 장르 | 2D 횡스크롤 액션 로그라이트 |
+| 개발 기간 | 2024.12 – 2025.02 (약 2개월) |
+| 개발 형태 | 1인 프로젝트 (첫 Unity 완성작) |
+| 개발 환경 | Unity 2022.3.21f1, C# |
 | 플랫폼 | PC |
+| 주요 기술 | 그리드 랜덤 방 생성, 몬스터 FSM, 보스 패턴 코루틴, ScriptableObject, Object Pooling, Cinemachine |
+| 상태 | 완료 (플레이 가능 빌드 기준, 영상 참고) |
 
-## 영상 및 문서
+마을에서 던전에 들어가 랜덤하게 이어진 방을 탐험하고 몬스터와 보스를 상대하는 게임입니다. 이동·전투·UI·대화·사운드·씬 전환이 하나의 루프로 돌아가도록 만든 첫 프로젝트이며, 이후 KrameLife와 MiniDriller에서 매니저 의존을 줄이는 기준이 됐습니다.
 
-- [기술 영상 보기](https://youtu.be/-EYzNawFw4I?si=8GvIfeenfUmr3SkY)
-- [기술 문서 PDF](Docs/Unity_기술문서_던레거시_양지섭.pdf)
-- [Docs 폴더 안내](Docs/README.md)
+## 담당 범위
 
-## 포트폴리오 포인트
+1인 프로젝트로 기획·구현·테스트를 모두 진행했습니다.
 
-- 마을, 던전, 보스전으로 이어지는 전체 게임 흐름을 구성했습니다.
-- 랜덤 방 생성, 문 연결, 미니맵 표시를 통해 던전 탐험 구조를 구현했습니다.
-- 플레이어 이동, 점프, 단방향 플랫폼, 전투, 장비, 체력 시스템을 구현했습니다.
-- 몬스터 FSM, 보스 패턴, 탄환 풀링을 통해 전투 흐름을 구성했습니다.
-- UI, 대화, 사운드, 씬 전환을 연결해 플레이 가능한 게임 루프를 완성했습니다.
+- `RoomManager`의 Queue 기반 랜덤 방 생성과 미니맵, 문 연결
+- `Monster` 상태머신(Idle / Tracking / Attacking / Die)과 원거리·근접·돌진 파생
+- `Boss`의 레이저·검·탄막 패턴 코루틴
+- 플레이어 이동·점프·단방향 플랫폼, 장비·체력, 업그레이드
+- Player / Monster / Weapon 데이터 ScriptableObject
+- 데미지 텍스트·탄환·사망 이펙트 오브젝트 풀, UI·대화·사운드 매니저
+- 외부 에셋: 스프라이트·타일맵·사운드(공개본에서 제외)
 
-## 주요 구현
+## 핵심 구현
 
-### 랜덤 던전 생성
+### 1. Queue로 한 프레임에 한 칸씩 넓혀 가는 랜덤 던전
 
-- 그리드 기반으로 방을 생성하고, 시작 방과 종료 방을 포함한 던전 구조를 구성했습니다.
-- 생성된 방의 위치를 기준으로 문을 열고 닫아 실제 이동 가능한 경로를 만들었습니다.
-- 방 정보와 미니맵 오브젝트를 연결해 현재 던전 구조를 시각적으로 확인할 수 있도록 구현했습니다.
+**문제.** 방을 한 번에 전부 배치하면 겹침·고립을 사후에 걸러내야 하고, 최소 방 수를 못 채우는 경우 처리가 복잡해집니다.
 
-### 플레이어 조작과 방 이동
+**선택.** `RoomManager`가 시작 방 좌표를 `Queue<Vector2Int>`에 넣고, `Update`마다 큐에서 하나를 꺼내 인접 칸에 방 생성을 시도합니다. 생성된 방은 다시 큐에 들어가 확장 후보가 됩니다. 최대 방 수에 도달하면 마지막 방을 종료 방 프리팹으로 바꾸고, 최소 방 수에 못 미치면 전체를 지우고 다시 생성합니다. 완료 후 `Dictionary<Vector2Int, GameObject>`로 미니맵을 만듭니다.
 
-- Rigidbody2D 기반 이동, 점프, 중력 보정, 단방향 플랫폼 내려가기 기능을 구현했습니다.
-- 문 충돌 시 화면 전환 효과를 실행한 뒤 인접 방의 입구 위치로 플레이어를 이동시켰습니다.
-- Cinemachine Camera와 Confiner를 활용해 현재 방 경계 안에서 플레이어를 추적하도록 구성했습니다.
+**결과.** 방 생성이 BFS처럼 시작 방에서 퍼져 나가므로 모든 방이 연결되고, 그리드 좌표가 곧 미니맵 좌표라 별도 매핑이 필요 없습니다.
 
-### 전투와 데이터 관리
+- [RoomManager.cs](https://github.com/Femur-0607/DunLegacy-Portfolio/blob/c95ad8052be422dd47f82a6242b4aaf8a05b880f/Assets/03.Script/Manager/RoomManager.cs) · [Room.cs](https://github.com/Femur-0607/DunLegacy-Portfolio/blob/c95ad8052be422dd47f82a6242b4aaf8a05b880f/Assets/03.Script/RandomMap/Room.cs) · [MiniMaps.cs](https://github.com/Femur-0607/DunLegacy-Portfolio/blob/c95ad8052be422dd47f82a6242b4aaf8a05b880f/Assets/03.Script/RandomMap/MiniMaps.cs)
 
-- 플레이어, 몬스터, 무기 스탯을 ScriptableObject로 분리해 데이터 수정과 밸런싱이 쉽도록 구성했습니다.
-- 공격력, 공격 속도, 이동 속도, 최대 체력 등 업그레이드 요소를 구현했습니다.
-- 데미지 텍스트, 탄환, 사망 이펙트 등에 오브젝트 풀링을 적용해 반복 생성 비용을 줄였습니다.
+### 2. enum 상태머신과 virtual 공격 패턴으로 나눈 몬스터
 
-### 몬스터와 보스 패턴
+**문제.** 원거리·근접·돌진 몬스터가 추적·공격·사망 처리를 각자 다르게 구현하면 같은 버그를 세 번 고치게 됩니다.
 
-- 몬스터 상태를 FSM 방식으로 분리하고, 원거리 공격, 근접 공격, 돌진 공격 패턴을 구현했습니다.
-- 보스는 레이저, 다중 레이저, 검 발사, 나선형 탄막 패턴을 Coroutine으로 제어했습니다.
-- 보스 등장, 사망 연출, 다음 던전으로 이동하는 흐름을 단계적으로 처리했습니다.
+**선택.** `Monster`가 `MonsterState` enum과 `UpdateState`의 `switch`로 상태 전이를 담당하고, 실제 공격만 `ExecuteAttackPattern`을 `virtual`로 열어 `CloseUpEnemy` / `FlyingEnemy` / `RushingEnemy`가 덮어씁니다. 공격 지연은 `AttackAfterDelay` 코루틴, 사망은 이펙트 대기 후 `base.Die`로 비활성화합니다. 체력·피격은 `HealthManager`를 상속해 보스와 공유합니다.
 
-### UI, 대화, 사운드
+**결과.** 추적·사망 로직은 한 곳에 있고 몬스터 종류를 늘릴 때는 공격 패턴 메서드 하나만 작성하면 됩니다.
 
-- UIManager를 통해 옵션, 상태창, 전환 패널 등 주요 UI를 관리했습니다.
-- DialogSystem으로 화자와 대사를 순차 출력하고, 타이핑 효과를 적용했습니다.
-- SoundManager를 싱글턴으로 구성해 BGM, 효과음, 옵션 볼륨 조절을 관리했습니다.
+- [Monster.cs](https://github.com/Femur-0607/DunLegacy-Portfolio/blob/c95ad8052be422dd47f82a6242b4aaf8a05b880f/Assets/03.Script/Monster/Monster.cs) · [RushingEnemy.cs](https://github.com/Femur-0607/DunLegacy-Portfolio/blob/c95ad8052be422dd47f82a6242b4aaf8a05b880f/Assets/03.Script/Monster/RushingEnemy.cs) · [HealthManager.cs](https://github.com/Femur-0607/DunLegacy-Portfolio/blob/c95ad8052be422dd47f82a6242b4aaf8a05b880f/Assets/03.Script/Manager/HealthManager.cs)
+
+### 3. 코루틴으로 순서를 제어한 보스 패턴
+
+**문제.** 레이저·다중 레이저·검 발사·나선형 탄막처럼 시간차가 있는 패턴을 `Update`의 타이머로 쓰면 분기와 플래그가 빠르게 늘어납니다.
+
+**선택.** `Boss.Attack`이 현재 패턴을 `switch`로 고르고, 각 패턴을 `TripleLaser` / `CreateSwordCoroutine` / `ShootBulletCoroutine` 코루틴으로 작성했습니다. 패턴이 끝나면 `PatternCoroutine`으로 돌아가 다음 패턴을 고릅니다. 탄막은 `index % 4`로 방향을 바꿔 나선형을 만듭니다.
+
+**결과.** 패턴 하나가 코루틴 하나라 시간 흐름이 코드 순서와 같고, 패턴 추가는 코루틴 하나와 `switch` 한 줄입니다.
+
+- [Boss.cs](https://github.com/Femur-0607/DunLegacy-Portfolio/blob/c95ad8052be422dd47f82a6242b4aaf8a05b880f/Assets/03.Script/Boss/Boss.cs) · [BossLaser.cs](https://github.com/Femur-0607/DunLegacy-Portfolio/blob/c95ad8052be422dd47f82a6242b4aaf8a05b880f/Assets/03.Script/Boss/BossLaser.cs) · [BulletPool.cs](https://github.com/Femur-0607/DunLegacy-Portfolio/blob/c95ad8052be422dd47f82a6242b4aaf8a05b880f/Assets/03.Script/Boss/BulletPool.cs)
+
+## 트러블슈팅 — 절차적 맵 생성을 최소 단위로 쪼개서 검증
+
+처음 랜덤 던전을 만들 때 생성·연결·미니맵을 한 번에 구현하니 어느 단계에서 방이 고립되는지 알 수 없었습니다. 생성 과정을 **좌표 한 칸 생성 → 인접 방 수 확인 → 문 연결 → 미니맵 반영**으로 나누고, 각 단계를 Gizmo와 로그로 확인하며 진행했습니다. 그 결과 한 프레임에 한 칸씩 처리하는 현재 구조가 됐고, 문제가 생겼을 때 어느 단계의 좌표가 잘못됐는지 바로 볼 수 있었습니다.
 
 ## 프로젝트 구조
 
 ```text
 Assets/
-├── 00.Scenes              # Unity 씬
-├── 01.Sprites             # 스프라이트 리소스
-├── 02.Animations          # 애니메이션
-├── 03.Script              # 게임 로직 스크립트
-│   ├── Boss               # 보스 패턴 및 보스전 로직
-│   ├── Dungeon            # 던전 출입 및 문 로직
-│   ├── Item               # 무기 및 아이템 로직
-│   ├── Manager            # 게임, 씬, 사운드, UI, 업그레이드 관리
-│   ├── Monster            # 몬스터 AI 및 전투 로직
-│   ├── Player             # 플레이어 이동, 체력, 장비, 입력
-│   ├── RandomMap          # 랜덤 방 생성 및 미니맵
-│   └── Scriptdata         # ScriptableObject 데이터 정의
-├── 03-1.ScriptableData    # 플레이어, 몬스터, 무기 데이터 에셋
-├── 04.Prefab              # 프리팹
-├── 05.TileMap             # 타일맵
-└── 06.AudioClip           # 사운드 리소스
+├── 03.Script/
+│   ├── Boss          # Boss 패턴, BossLaser, BossSword, BulletPool
+│   ├── Dungeon       # Door, GateController, StartRoom
+│   ├── Item          # Weapons, WeaponsAttack
+│   ├── Manager       # Game, Room, Dungeon, Health, Sound, UI, Upgrade, SceneTransition
+│   ├── Monster       # Monster FSM과 CloseUp / Flying / Rushing 파생
+│   ├── NPC           # 마을 NPC와 대화 트리거
+│   ├── Player        # Controller, Input, Health, Equipment
+│   ├── RandomMap     # Room, MiniMaps, RandomManager
+│   ├── Scriptdata    # Monster / Player / Weapons ScriptableObject 정의
+│   ├── UI            # DialogSystem, UpgradeUI, 스크롤 배경
+│   └── etc           # ObjectPool, DamageText, SpawnZone
+├── 03-1.ScriptableData   # 데이터 에셋
+└── Docs/                 # 기술문서 PDF
 ```
 
-## 실행 방법
+스프라이트·씬·타일맵·오디오 폴더는 공개본에서 제외했습니다.
 
-1. Unity Hub에서 프로젝트를 엽니다.
-2. Unity 버전은 `2022.3.21f1`을 권장합니다.
-3. `Assets/00.Scenes` 또는 시작 씬을 열고 Play를 실행합니다.
+## 알고 있는 한계와 다음 과제
 
-## 개발하며 배운 점
+첫 프로젝트라 이후 작업에서 고친 기준이 몇 가지 있습니다.
 
-- 게임 루프를 완성하려면 이동, 전투, UI, 씬 전환, 사운드가 서로 맞물리는 구조를 먼저 잡아야 한다는 점을 배웠습니다.
-- 랜덤 던전 생성은 방 배치뿐 아니라 문 연결, 미니맵, 몬스터 스폰, 클리어 상태 관리까지 함께 설계해야 안정적으로 동작한다는 점을 체감했습니다.
-- 이후 프로젝트에서는 매니저 간 의존성, 데이터 저장 구조, 테스트 가능한 코드 분리를 더 체계적으로 관리해야 한다는 개선 방향을 얻었습니다.
+- `RoomManager`는 최소 방 수를 못 채우면 재생성을 반복하고 최대 시도 횟수가 없습니다. 불가능한 설정(최소 > 최대)을 초기에 거부하고 시도 횟수를 제한하는 쪽이 안전합니다.
+- `Monster.OnDamage`는 `damage - defense`를 그대로 체력에서 빼서, 방어력이 피해보다 크면 체력이 늘어나는 경로가 있습니다. 0 하한을 두는 것이 의도에 맞습니다.
+- 매니저들이 싱글턴과 `DontDestroyOnLoad`에 의존합니다. KrameLife에서는 `GameContext`와 이벤트 채널로 접근 경로를 하나로 모았습니다.
+- 위 항목은 코드 검토에서 찾은 것이며 실제 플레이에서 재현한 기록은 아닙니다.
 
-## 개선 예정
+## 공개 범위와 확인 방법
 
-- 매니저 의존성 정리 및 초기화 순서 개선
-- 저장 데이터 구조 개선
-- 랜덤 던전 생성 로직의 예외 케이스 보강
-- 전투 밸런싱과 보스 패턴 가독성 개선
+- 이 저장소는 **코드 열람용**입니다. 씬·프리팹·에셋이 없어 Unity Hub에서 열어도 플레이할 수 없습니다.
+- 플레이 결과는 [영상](https://youtu.be/-EYzNawFw4I), 구현 설명은 [기술문서 PDF](Docs/Unity_기술문서_던레거시_양지섭.pdf)를 참고해 주세요.
+- 코드 링크는 커밋 `c95ad80`에 고정돼 있어 이후 변경과 무관하게 같은 내용을 가리킵니다.
+
+© 2026 Yang Ji-seop. Portfolio use only.
