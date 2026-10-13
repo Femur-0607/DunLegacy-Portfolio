@@ -36,23 +36,23 @@
 
 ## 핵심 구현
 
-### 1. Queue로 한 프레임에 한 칸씩 넓혀 가는 랜덤 던전
+### 1. Queue로 프레임마다 확장 후보 하나를 처리하는 랜덤 던전
 
 **문제.** 방을 한 번에 전부 배치하면 겹침·고립을 사후에 걸러내야 하고, 최소 방 수를 못 채우는 경우 처리가 복잡해집니다.
 
-**선택.** `RoomManager`가 시작 방 좌표를 `Queue<Vector2Int>`에 넣고, `Update`마다 큐에서 하나를 꺼내 인접 칸에 방 생성을 시도합니다. 생성된 방은 다시 큐에 들어가 확장 후보가 됩니다. 최대 방 수에 도달하면 마지막 방을 종료 방 프리팹으로 바꾸고, 최소 방 수에 못 미치면 전체를 지우고 다시 생성합니다. 완료 후 `Dictionary<Vector2Int, GameObject>`로 미니맵을 만듭니다.
+**선택.** `RoomManager`가 시작 방과 두 번째 방 좌표를 `Queue<Vector2Int>`에 넣고, `Update`마다 후보 하나를 꺼내 상하좌우 네 방향에 방 생성을 시도했습니다. 생성한 방은 다시 큐에 넣고 이웃 방과 양쪽 문을 연결했습니다. 새 방으로 최대 방 수에 도달할 때는 생성 시 종료 방 프리팹을 선택하고, 최소 방 수를 못 채우면 전체를 지우고 다시 생성했습니다. 완료 후 같은 좌표로 미니맵을 만들고 `Dictionary<Vector2Int, GameObject>`에 저장했습니다.
 
-**결과.** 방 생성이 BFS처럼 시작 방에서 퍼져 나가므로 모든 방이 연결되고, 그리드 좌표가 곧 미니맵 좌표라 별도 매핑이 필요 없습니다.
+**결과.** 기존 방의 이웃에 새 방을 생성하고 양쪽 문을 열어 논리적인 연결을 구성했습니다. 방과 미니맵에 같은 그리드 좌표를 사용했습니다.
 
 - [RoomManager.cs](https://github.com/Femur-0607/DunLegacy-Portfolio/blob/c95ad8052be422dd47f82a6242b4aaf8a05b880f/Assets/03.Script/Manager/RoomManager.cs) · [Room.cs](https://github.com/Femur-0607/DunLegacy-Portfolio/blob/c95ad8052be422dd47f82a6242b4aaf8a05b880f/Assets/03.Script/RandomMap/Room.cs) · [MiniMaps.cs](https://github.com/Femur-0607/DunLegacy-Portfolio/blob/c95ad8052be422dd47f82a6242b4aaf8a05b880f/Assets/03.Script/RandomMap/MiniMaps.cs)
 
-### 2. enum 상태머신과 virtual 공격 패턴으로 나눈 몬스터
+### 2. enum 상태머신과 파생 클래스별 동작으로 나눈 몬스터
 
 **문제.** 원거리·근접·돌진 몬스터가 추적·공격·사망 처리를 각자 다르게 구현하면 같은 버그를 세 번 고치게 됩니다.
 
-**선택.** `Monster`가 `MonsterState` enum과 `UpdateState`의 `switch`로 상태 전이를 담당하고, 실제 공격만 `ExecuteAttackPattern`을 `virtual`로 열어 `CloseUpEnemy` / `FlyingEnemy` / `RushingEnemy`가 덮어씁니다. 공격 지연은 `AttackAfterDelay` 코루틴, 사망은 이펙트 대기 후 `base.Die`로 비활성화합니다. 체력·피격은 `HealthManager`를 상속해 보스와 공유합니다.
+**선택.** `Monster`가 `FixedUpdate`에서 감지 범위를 확인하고, `MonsterState` enum과 `UpdateState`의 `switch`로 공통 상태 흐름을 처리했습니다. 공격 전후 대기는 `AttackAfterDelay`, 체력·기본 비활성화는 `HealthManager`에서 공유했습니다. 파생 클래스는 `ExecuteAttackPattern`뿐 아니라 필요한 추적·사망 연출도 확장하고, `RushingEnemy`는 별도 `Update`에서 돌진 거리·피해를 처리했습니다.
 
-**결과.** 추적·사망 로직은 한 곳에 있고 몬스터 종류를 늘릴 때는 공격 패턴 메서드 하나만 작성하면 됩니다.
+**결과.** 공통 FSM과 공격 대기를 재사용하면서 종류별 이동·공격·사망 처리를 파생 클래스에 나눴습니다.
 
 - [Monster.cs](https://github.com/Femur-0607/DunLegacy-Portfolio/blob/c95ad8052be422dd47f82a6242b4aaf8a05b880f/Assets/03.Script/Monster/Monster.cs) · [RushingEnemy.cs](https://github.com/Femur-0607/DunLegacy-Portfolio/blob/c95ad8052be422dd47f82a6242b4aaf8a05b880f/Assets/03.Script/Monster/RushingEnemy.cs) · [HealthManager.cs](https://github.com/Femur-0607/DunLegacy-Portfolio/blob/c95ad8052be422dd47f82a6242b4aaf8a05b880f/Assets/03.Script/Manager/HealthManager.cs)
 
@@ -60,15 +60,15 @@
 
 **문제.** 레이저·다중 레이저·검 발사·나선형 탄막처럼 시간차가 있는 패턴을 `Update`의 타이머로 쓰면 분기와 플래그가 빠르게 늘어납니다.
 
-**선택.** `Boss.Attack`이 현재 패턴을 `switch`로 고르고, 각 패턴을 `TripleLaser` / `CreateSwordCoroutine` / `ShootBulletCoroutine` 코루틴으로 작성했습니다. 패턴이 끝나면 `PatternCoroutine`으로 돌아가 다음 패턴을 고릅니다. 탄막은 `index % 4`로 방향을 바꿔 나선형을 만듭니다.
+**선택.** `PatternCoroutine`에서 2초 대기 후 패턴을 고르고, `Boss.Attack`의 `switch`로 실행했습니다. 레이저·검·탄막의 대기 동작은 코루틴으로 나눴으며, 검은 생성·발사·회수를 별도 코루틴으로 처리했습니다. 검 발사 후 다음 패턴 선택을 예약해 회수 완료를 기다리지는 않습니다. 탄막은 `index % 4`로 네 방향을 고르고, `bulletCount`에 따른 각도로 회전시켰습니다.
 
-**결과.** 패턴 하나가 코루틴 하나라 시간 흐름이 코드 순서와 같고, 패턴 추가는 코루틴 하나와 `switch` 한 줄입니다.
+**결과.** 패턴 선택과 시간차가 있는 공격 동작을 코루틴으로 나눠 표현했습니다.
 
 - [Boss.cs](https://github.com/Femur-0607/DunLegacy-Portfolio/blob/c95ad8052be422dd47f82a6242b4aaf8a05b880f/Assets/03.Script/Boss/Boss.cs) · [BossLaser.cs](https://github.com/Femur-0607/DunLegacy-Portfolio/blob/c95ad8052be422dd47f82a6242b4aaf8a05b880f/Assets/03.Script/Boss/BossLaser.cs) · [BulletPool.cs](https://github.com/Femur-0607/DunLegacy-Portfolio/blob/c95ad8052be422dd47f82a6242b4aaf8a05b880f/Assets/03.Script/Boss/BulletPool.cs)
 
 ## 트러블슈팅 — 절차적 맵 생성을 최소 단위로 쪼개서 검증
 
-처음 랜덤 던전을 만들 때 생성·연결·미니맵을 한 번에 구현하니 어느 단계에서 방이 고립되는지 알 수 없었습니다. 생성 과정을 **좌표 한 칸 생성 → 인접 방 수 확인 → 문 연결 → 미니맵 반영**으로 나누고, 각 단계를 Gizmo와 로그로 확인하며 진행했습니다. 그 결과 한 프레임에 한 칸씩 처리하는 현재 구조가 됐고, 문제가 생겼을 때 어느 단계의 좌표가 잘못됐는지 바로 볼 수 있었습니다.
+처음 랜덤 던전을 만들 때 생성·연결·미니맵을 한 번에 구현하니 어느 단계에서 방이 고립되는지 알 수 없었습니다. 생성 과정을 **좌표 한 칸 생성 → 인접 방 수 확인 → 문 연결 → 미니맵 반영**으로 나누고, 각 단계를 Gizmo와 로그로 확인하며 진행했습니다. 그 결과 한 프레임에 후보 좌표 하나의 네 방향을 검사하는 현재 구조가 됐고, 문제가 생겼을 때 어느 단계의 좌표가 잘못됐는지 바로 볼 수 있었습니다.
 
 ## 프로젝트 구조
 
