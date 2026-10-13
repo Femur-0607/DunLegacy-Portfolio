@@ -64,7 +64,7 @@
 
 **결과.** 패턴 선택과 시간차가 있는 공격 동작을 코루틴으로 나눠 표현했습니다.
 
-- [Boss.cs](https://github.com/Femur-0607/DunLegacy-Portfolio/blob/c95ad8052be422dd47f82a6242b4aaf8a05b880f/Assets/03.Script/Boss/Boss.cs) · [BossLaser.cs](https://github.com/Femur-0607/DunLegacy-Portfolio/blob/c95ad8052be422dd47f82a6242b4aaf8a05b880f/Assets/03.Script/Boss/BossLaser.cs) · [BulletPool.cs](https://github.com/Femur-0607/DunLegacy-Portfolio/blob/c95ad8052be422dd47f82a6242b4aaf8a05b880f/Assets/03.Script/Boss/BulletPool.cs)
+- [Boss.cs](https://github.com/Femur-0607/DunLegacy-Portfolio/blob/c95ad8052be422dd47f82a6242b4aaf8a05b880f/Assets/03.Script/Boss/Boss.cs) · [BossLaser.cs](https://github.com/Femur-0607/DunLegacy-Portfolio/blob/c95ad8052be422dd47f82a6242b4aaf8a05b880f/Assets/03.Script/Boss/BossLaser.cs)
 
 ## 트러블슈팅 — 절차적 맵 생성을 최소 단위로 쪼개서 검증
 
